@@ -16,9 +16,34 @@ Requirements:
 
 - opencode (tested with v2.2.5)
 - The machine must be on the same Tailscale tailnet, so it can reach `the llama-server host`
-- `service.json` is **not** in this repo (it holds a local password). opencode creates it on first run if needed.
+- `service.json` is **not** in this repo (it holds a local password). opencode creates it on first run. See [About `service.json`](#about-servicejson).
 
 Update later with `git -C ~/.config/opencode pull`.
+
+## About `service.json`
+
+`~/.config/opencode/service.json` configures opencode's **background service**. It is excluded via `.gitignore`.
+
+opencode v2 runs a local background server (default port 49374 for the `latest` channel). The terminal UI and other
+clients connect to it over HTTP instead of running everything in one process. Those connections use HTTP basic auth
+with the username `opencode` and the `password` from this file, so other local processes or users can't control the
+opencode session through that port.
+
+The file can contain these keys: `password`, `hostname`, `port`, `cors`, `env`, `disabled`, `remote`. Mine only
+contains `password`.
+
+A related file, `~/.local/state/opencode/service.json`, is the runtime record of the running service (process ID,
+URL, version and password). Clients read it to find the server. That's state, not config.
+
+Notes:
+
+- It's a per-machine secret. Don't commit it, especially since this repo is public.
+- It doesn't need to be copied to a new machine. opencode generates it on first run.
+- Machines don't need matching passwords. Each one only protects its own local service. You'd only share it if
+  a client on one machine should connect to the opencode service on another (`remote`/`hostname`), which this setup
+  doesn't do. The connection to `llama-server` on v1000 doesn't use this file.
+
+This file isn't officially documented. The details above come from reading the opencode 2.2.5 binary.
 
 ## Settings explained (`opencode.json`)
 
