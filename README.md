@@ -10,15 +10,30 @@ It points opencode at a self-hosted **llama.cpp** server on my Tailscale network
 [ -d ~/.config/opencode ] && mv ~/.config/opencode ~/.config/opencode.bak
 
 git clone git@github.com:falkorichter/opencode-config.git ~/.config/opencode
+cd ~/.config/opencode && ./setup.sh
 ```
 
 Requirements:
 
 - opencode (tested with v2.2.5)
-- The machine must be on the same Tailscale tailnet, so it can reach `the llama-server host`
+- Network access to the llama-server machine (in my case over Tailscale)
 - `service.json` is **not** in this repo (it holds a local password). opencode creates it on first run. See [About `service.json`](#about-servicejson).
 
-Update later with `git -C ~/.config/opencode pull`.
+Update later with `git -C ~/.config/opencode pull && ~/.config/opencode/setup.sh`.
+
+## Server URL and `setup.sh`
+
+The llama-server URL is machine-specific, so it's not in this repo. Instead:
+
+- `opencode.json.template` is the config committed to git, with the placeholder `__OPENCODE_BASE_URL__` in place of the URL.
+- `setup.sh` generates `opencode.json` from the template. It takes the URL from, in this order:
+  1. the first argument: `./setup.sh http://myhost:8081/v1`
+  2. `OPENCODE_BASE_URL` in `.env` (see `.env.example`)
+  3. an interactive prompt, which offers to save your answer to `.env`
+- `opencode.json` and `.env` are in `.gitignore`. If `opencode.json` already exists and would change, the script backs it up to `opencode.json.bak` first.
+
+To change a setting (models, limits, ...), edit `opencode.json.template`, not `opencode.json`, then rerun `./setup.sh`.
+Otherwise the change gets overwritten the next time the script runs.
 
 ## About `service.json`
 
@@ -45,7 +60,7 @@ Notes:
 
 This file isn't officially documented. The details above come from reading the opencode 2.2.5 binary.
 
-## Settings explained (`opencode.json`)
+## Settings explained (`opencode.json.template`)
 
 | Key | Value | Meaning |
 |-----|-------|---------|
@@ -58,7 +73,7 @@ This file isn't officially documented. The details above come from reading the o
 |-----|-------|---------|
 | `npm` | `@ai-sdk/openai-compatible` | Talk to the server through the OpenAI-compatible API, which `llama-server` provides. |
 | `name` | `v1000 (llama.cpp)` | Display name in the opencode UI. |
-| `options.baseURL` | `__OPENCODE_BASE_URL__` | `llama-server` endpoint on host `v1000`, reached over Tailscale MagicDNS. |
+| `options.baseURL` | `__OPENCODE_BASE_URL__` | `llama-server` endpoint, filled in by `setup.sh`. Usually ends in `/v1`. |
 
 ### Model `Terathox-Coder/Qwen3.8-27B-MTP-GGUF:Q4_K_M`
 
