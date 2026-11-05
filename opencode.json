@@ -1,0 +1,28 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "v1000/Terathox-Coder/Qwen3.8-27B-MTP-GGUF:Q4_K_M",
+  "provider": {
+    "v1000": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "v1000 (llama.cpp)",
+      "options": {
+        "baseURL": "__OPENCODE_BASE_URL__"
+      },
+      "models": {
+        "Terathox-Coder/Qwen3.8-27B-MTP-GGUF:Q4_K_M": {
+          "name": "Qwen3.8 27B Coder (v1000)",
+          "tool_call": true,
+          "attachment": false,
+          "modalities": {
+            "input": ["text"],
+            "output": ["text"]
+          },
+          "limit": {
+            "context": 80000,
+            "output": 16384
+          }
+        }
+      }
+    }
+  }
+}

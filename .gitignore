@@ -1,0 +1,7 @@
+# Contains a local password, never commit
+service.json
+
+# Local state / caches opencode may create
+node_modules/
+*.log
+.DS_Store
